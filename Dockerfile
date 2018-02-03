@@ -40,7 +40,7 @@ RUN make install
 # tomcat 설치
 RUN cd /home1/irteam/apps
 WORKDIR /home1/irteam/apps
-RUN wget http://mirror.navercorp.com/apache/tomcat/tomcat-8/v8.5.24/bin/apache-tomcat-8.5.24.tar.gz
+RUN wget wget http://archive.apache.org/dist/tomcat/tomcat-8/v8.5.24/bin/apache-tomcat-8.5.24.tar.gz 
 RUN tar xvzf apache-tomcat-8.5.24.tar.gz
 RUN ln -s apache-tomcat-8.5.24 tomcat
 # jdk 설치
