@@ -2,8 +2,8 @@ From centos:7
 
 # irteam/irteamsu 환경 설정
 RUN mkdir /home1
-RUN useradd -m -d /home1/irteam irteam -s /bin/bash
-RUN useradd -m -d /home1/irteamsu irteamsu -s /bin/bash
+RUN useradd -m -d /home1/irteam irteam 
+RUN useradd -m -d /home1/irteamsu irteamsu  
 RUN usermod -G irteam irteamsu
 RUN chmod 755 /home1/irteam
 RUN chmod 755 /home1/irteamsu
@@ -56,6 +56,17 @@ RUN cd /home1/irteam/apps/instance1/bin\
 && echo "cd $CATALINA_HOME" >> startup_instance1.sh\
 && echo "./shutdown.sh" >> startup_instance1.sh\
 && chmod 755 shutdown_instance1.sh
+WORKDIR /home1/irteam/apps/instance2/bin
+RUN cd /home1/irteam/apps/instance2/bin\
+&& touch startup_instance2.sh\
+&& echo "cd $CATALINA_HOME" >> startup_instance2.sh\
+&& echo "./startup.sh" >> startup_instance2.sh\
+&& chmod 755 startup_instance2.sh\
+&& touch shutdown_instance2.sh\
+&& echo "cd $CATALINA_HOME" >> startup_instance2.sh\
+&& echo "./shutdown.sh" >> startup_instance2.sh\
+&& chmod 755 shutdown_instance1.sh
+
 
 # jdk 설치
 RUN wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u161-b12/2f38c3b165be4555a1fa6e98c45e0808/jdk-8u161-linux-x64.tar.gz
