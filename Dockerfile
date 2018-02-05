@@ -1,4 +1,4 @@
-From centos:7
+From centos:7.4.1708
 
 # irteam/irteamsu 환경 설정
 RUN mkdir /home1
@@ -6,11 +6,12 @@ RUN useradd -m -d /home1/irteam irteam
 RUN useradd -m -d /home1/irteamsu irteamsu  
 RUN usermod -G irteam irteamsu
 RUN chmod 755 /home1/irteam
-RUN chmod 755 /home1/irteamsu
+RUN chmod 755 /home1/irteamsu\
+&& yum -y install sudo
 RUN echo "irteamsu ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-RUN yum -y install rpm
-RUN yum -y update
-RUN yum -y install net-tools git wget openssl openssl-devel libxml2-devel pcre-devel gcc expat-devel cmake gdbm gdbm-devel libjpeg-turbo-devel libpng-devel freetype-devel gd.x86_64 php-xml ncurses-devel cmake libaio-devel gcc-c++ perl-Data-Dumper
+RUN su - irteamsu
+RUN sudo yum -y update
+RUN sudo yum -y install net-tools git wget openssl openssl-devel libxml2-devel pcre-devel gcc expat-devel cmake gdbm gdbm-devel libjpeg-turbo-devel libpng-devel freetype-devel gd.x86_64 php-xml ncurses-devel cmake libaio-devel gcc-c++ perl-Data-Dumper
 RUN exit
 RUN su - irteam
 RUN cd /home1/irteam
@@ -44,57 +45,66 @@ RUN wget http://archive.apache.org/dist/tomcat/tomcat-8/v8.5.24/bin/apache-tomca
 RUN tar xvzf apache-tomcat-8.5.24.tar.gz
 RUN ln -s apache-tomcat-8.5.24 tomcat
 #instance 2개 생성
-RUN cp tomcat instance1
-RUN cp tomcat instance2
+RUN mkdir instance1\
+&& mkdir instance2
+WORKDIR /home1/irteam/apps/tomcat
+RUN cd /home1/irteam/apps/tomcat\
+&& cp -R bin conf lib logs temp work /home1/irteam/apps/instance1\
+&& cp -R bin conf lib logs temp work /home1/irteam/apps/instance2\
+&& ln -s webapps/ /home1/irteam/apps/instance1/webapps\
+&& ln -s webapps/ /home1/irteam/apps/instance2/webapps
 WORKDIR /home1/irteam/apps/instance1/bin
 RUN cd /home1/irteam/apps/instance1/bin\
 && touch startup_instance1.sh\
-&& echo "cd $CATALINA_HOME" >> startup_instance1.sh\
+&& echo "cd /home1/irteam/apps/instance1/bin" >>startup_instance1.sh\
 && echo "./startup.sh" >> startup_instance1.sh\
 && chmod 755 startup_instance1.sh\
 && touch shutdown_instance1.sh\
-&& echo "cd $CATALINA_HOME" >> startup_instance1.sh\
-&& echo "./shutdown.sh" >> startup_instance1.sh\
+&& echo "cd /home1/irteam/apps/instance1/bin" >> shutdown_instance1.sh\
+&& echo "./shutdown.sh" >> shutdown_instance1.sh\
 && chmod 755 shutdown_instance1.sh
 WORKDIR /home1/irteam/apps/instance2/bin
 RUN cd /home1/irteam/apps/instance2/bin\
-&& touch startup_instance2.sh\
-&& echo "cd $CATALINA_HOME" >> startup_instance2.sh\
+&& echo "cd /home1/irteam/apps/instance1/bin" >>startup_instance2.sh\
 && echo "./startup.sh" >> startup_instance2.sh\
 && chmod 755 startup_instance2.sh\
 && touch shutdown_instance2.sh\
-&& echo "cd $CATALINA_HOME" >> startup_instance2.sh\
-&& echo "./shutdown.sh" >> startup_instance2.sh\
-&& chmod 755 shutdown_instance1.sh
+&& echo "cd /home1/irteam/apps/instance1/bin" >> shutdown_instance2.sh\
+&& echo "./shutdown.sh" >> shutdown_instance2.sh\
+&& chmod 755 shutdown_instance2.sh
 
 
 # jdk 설치
-RUN wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u161-b12/2f38c3b165be4555a1fa6e98c45e0808/jdk-8u161-linux-x64.tar.gz
-RUN tar xvzf jdk-8u161-linux-x64.tar.gz
-RUN ln -s jdk1.8.0_161 jdk
-RUN echo "export LD_LIBRARY_PATH=/home1/irteam/apps/python/lib:/usr/lib/:/usr/lib64/:/usr/include/:/home1/irteam/apps/net-snmp/lib:$LD_LIBRARY_PATH" >> ~/.bashrc
-RUN echo "export APP_HOME=/home1/irteam" >> ~/.bashrc
-RUN echo "export JAVA_HOME=$APP_HOME/apps/jdk" >> ~/.bashrc
-RUN echo "export PATH=$JAVA_HOME/bin:$JAVA_HOME/jre/bin:$PATH" >> ~/.bashrc
-RUN echo "export CLASSPATH=.:$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/jre/lib/ext" >> ~/.bashrc
-RUN echo "export PATH=/home1/irteam/apps/mysql/bin:/home1/irteam/apps/cmake/bin:$PATH" >> ~/.bashrc
-RUN echo "export CATALINA_HOME=${APP_HOME}/apps/tomcat" >> ~/.bashrc
-RUN echo "export PYTHON_HOME=$APP_HOME/apps/python" >> ~/.bashrc
-RUN echo "export PATH=$PYTHON_HOME/bin:$PATH" >> ~/.bashrc
-RUN echo "export MYSQL_HOME=$APP_HOME/mysql" >> ~/.bashrc
-RUN echo "export  PHP=$APP_HOME/php" >> ~/.bashrc
-RUN source ~/.bashrc
+WORKDIR /home1/irteam/apps
+RUN cd /home1/irteam/apps\
+&& wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u161-b12/2f38c3b165be4555a1fa6e98c45e0808/jdk-8u161-linux-x64.tar.gz\
+&& tar xvzf jdk-8u161-linux-x64.tar.gz\
+&& ln -s jdk1.8.0_161 jdk\
+&& echo "export LD_LIBRARY_PATH=/home1/irteam/apps/python/lib:/usr/lib/:/usr/lib64/:/usr/include/:/home1/irteam/apps/net-snmp/lib:$LD_LIBRARY_PATH" >> ~/.bashrc\
+&& echo "export APP_HOME=/home1/irteam" >> ~/.bashrc\
+&& echo "export JAVA_HOME=$APP_HOME/apps/jdk" >> ~/.bashrc\
+&& echo "export PATH=$JAVA_HOME/bin:$JAVA_HOME/jre/bin:$PATH" >> ~/.bashrc\
+&& echo "export CLASSPATH=.:$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/jre/lib/ext" >> ~/.bashrc\
+&& echo "export PATH=/home1/irteam/apps/mysql/bin:/home1/irteam/apps/cmake/bin:$PATH" >> ~/.bashrc\
+&& echo "export CATALINA_HOME=${APP_HOME}/apps/tomcat" >> ~/.bashrc\
+&& echo "export PYTHON_HOME=$APP_HOME/apps/python" >> ~/.bashrc\
+&& echo "export PATH=$PYTHON_HOME/bin:$PATH" >> ~/.bashrc\
+&& echo "export MYSQL_HOME=$APP_HOME/mysql" >> ~/.bashrc\
+&& echo "export  PHP=$APP_HOME/php" >> ~/.bashrc\
+&& source ~/.bashrc
 # mod_jk설치
-RUN wget http://apache.tt.co.kr/tomcat/tomcat-connectors/jk/tomcat-connectors-1.2.42-src.tar.gz
-RUN tar xvzf tomcat-connectors-1.2.42-src.tar.gz
-RUN cd /home1/irteam/apps/tomcat-connectors-1.2.42-src/native
+
+RUN wget http://apache.tt.co.kr/tomcat/tomcat-connectors/jk/tomcat-connectors-1.2.42-src.tar.gz\
+&& tar xvzf tomcat-connectors-1.2.42-src.tar.gz\
+&& cd /home1/irteam/apps/tomcat-connectors-1.2.42-src/native
 WORKDIR /home1/irteam/apps/tomcat-connectors-1.2.42-src/native
-RUN ./configure --with-apxs=/home1/irteam/apps/apache/bin/apxs
-RUN make 
-RUN cd /home1/irteam/apps/tomcat-connectors-1.2.42-src/native/apache-2.0
+RUN ./configure --with-apxs=/home1/irteam/apps/apache/bin/apxs \
+&& make\
+&& make install\
+&& cd /home1/irteam/apps/tomcat-connectors-1.2.42-src/native/apache-2.0
 WORKDIR /home1/irteam/apps/tomcat-connectors-1.2.42-src/native/apache-2.0
-RUN chmod 755 mod_jk.so
-RUN cp mod_jk.so /home1/irteam/apps/apache/modules
+RUN chmod 755 mod_jk.so\
+&& cp mod_jk.so /home1/irteam/apps/apache/modules
 
 EXPOSE 80
 EXPOSE 443
