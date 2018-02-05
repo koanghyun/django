@@ -106,5 +106,41 @@ WORKDIR /home1/irteam/apps/tomcat-connectors-1.2.42-src/native/apache-2.0
 RUN chmod 755 mod_jk.so\
 && cp mod_jk.so /home1/irteam/apps/apache/modules
 
+# mysql설치
+WORKDIR /home1/irteam/apps
+RUN cd /home1/irteam/apps\
+&& wget https://downloads.mysql.com/archives/get/file/mysql-5.6.35.tar.gz\
+&& tar xvzf mysql-5.6.35.tar.gz
+WORKDIR /home1/irteam/apps/mysql-5.6.35
+RUN cd mysql-5.6.35\
+&& cmake . -DWITH_ARCHIVE_STORAGE_ENGINE=1 -DWITH_FEDERATED_STORAGE_ENGINE=1 -DWITH_BLACKHOLE_STORAGE_ENGINE=1 -DMYSQL_DATADIR=/home1/irteam/apps/mysql/data/ -DCMAKE_INSTALL_PREFIX=/home1/irteam/apps/mysql -DINSTALL_LAYOUT=STANDALONE -DENABLED_PROFILING=ON -DMYSQL_MAINTAINER_MODE=OFF -DWITH_DEBUG=OFF -DDEFAULT_CHARSET=utf8 -DENABLED_LOCAL_INFILE=TRUE -DWITH_ZLIB=bundled -DWITH_INNOBASE_STORAGE_ENGINE=1 -DMYSQL_TCP_PORT=13306 -DDEFAULT_COLLATION=utf8_general_ci -DMYSQL_UNIX_ADDR=/home1/irteam/apps/mysql/run/mysql.sock\
+&& make\
+&& make install
+WORKDIR /home1/irteam/apps/mysql/scripts
+RUN cd /home1/irteam/apps/mysql/scripts\
+&& /home1/irteam/apps/mysql/scripts
+WORKDIR /home1/irteam/apps/mysql 
+RUN vi my.cnf\
+&& echo "innodb_buffer_pool_size = 1G" >> my.cnf\
+&& echo "port = 13306" >> my.cnf\
+&& echo "basedir = /home1/irteam/apps/mysql" >> my.cnf\
+&& echo "datadir = /home1/irteam/apps/mysql" >> my.cnf\
+&& echo "sock = /home1/irteam/apps/mysql/run/mysql.sock" >> my.cnf\
+&& mkdir run\
+&& mkdir logs\
+&& ./mysqld --basedir=/home1/irteam/apps/mysql --datadir=/home1/irteam/apps/mysql/data --plugin-dir=/home1/irteam/apps/mysql/lib/plugin --log-error=/home1/irteam/apps/mysql/logs/error.log --pid-file=/home1/irteam/apps/mysql/run/mysqld.pid --socket=/home1/irteam/apps/mysql/run/mysql.sock --port=13306 \
+&& ./mysql -u root -S /home1/irteam/apps/mysql/run/mysql.sock\
+&& use mysql;\
+&& update user set password=password('123456') where user='root';\
+&& flush privileges;\
+&& \q
+
+
+
+
+
+
+
+
 EXPOSE 80
 EXPOSE 443
