@@ -40,9 +40,23 @@ RUN make install
 # tomcat 설치
 RUN cd /home1/irteam/apps
 WORKDIR /home1/irteam/apps
-RUN wget wget http://archive.apache.org/dist/tomcat/tomcat-8/v8.5.24/bin/apache-tomcat-8.5.24.tar.gz 
+RUN wget http://archive.apache.org/dist/tomcat/tomcat-8/v8.5.24/bin/apache-tomcat-8.5.24.tar.gz 
 RUN tar xvzf apache-tomcat-8.5.24.tar.gz
 RUN ln -s apache-tomcat-8.5.24 tomcat
+#instance 2개 생성
+RUN cp tomcat instance1
+RUN cp tomcat instance2
+WORKDIR /home1/irteam/apps/instance1/bin
+RUN cd /home1/irteam/apps/instance1/bin\
+&& touch startup_instance1.sh\
+&& echo "cd $CATALINA_HOME" >> startup_instance1.sh\
+&& echo "./startup.sh" >> startup_instance1.sh\
+&& chmod 755 startup_instance1.sh\
+&& touch shutdown_instance1.sh\
+&& echo "cd $CATALINA_HOME" >> startup_instance1.sh\
+&& echo "./shutdown.sh" >> startup_instance1.sh\
+&& chmod 755 shutdown_instance1.sh
+
 # jdk 설치
 RUN wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u161-b12/2f38c3b165be4555a1fa6e98c45e0808/jdk-8u161-linux-x64.tar.gz
 RUN tar xvzf jdk-8u161-linux-x64.tar.gz
