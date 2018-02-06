@@ -130,7 +130,8 @@ RUN cd /home1/irteam/apps/mysql\
 && mkdir logs
 WORKDIR /home1/irteam/apps/mysql/bin
 RUN cd /home1/irteam/apps/mysql/bin
-RUN ./mysqld --basedir=/home1/irteam/apps/mysql --datadir=/home1/irteam/apps/mysql/data --plugin-dir=/home1/irteam/apps/mysql/lib/plugin --log-error=/home1/irteam/apps/mysql/logs/error.log --pid-file=/home1/irteam/apps/mysql/run/mysqld.pid --socket=/home1/irteam/apps/mysql/run/mysql.sock --port=13306 
+RUN ./mysqld --basedir=/home1/irteam/apps/mysql --datadir=/home1/irteam/apps/mysql/data --plugin-dir=/home1/irteam/apps/mysql/lib/plugin --log-error=/home1/irteam/apps/mysql/logs/error.log --pid-file=/home1/irteam/apps/mysql/run/mysqld.pid --socket=/home1/irteam/apps/mysql/run/mysql.sock --port=13306 &
+RUN  
 RUN ./mysql -u root -S /home1/irteam/apps/mysql/run/mysql.sock
 RUN use mysql;
 RUN update user set password=password('123456') where user='root';
