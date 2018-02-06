@@ -84,7 +84,7 @@ RUN cd /home1/irteam/apps\
 && echo "export APP_HOME=/home1/irteam" >> ~/.bashrc\
 && echo "export JAVA_HOME=$APP_HOME/apps/jdk" >> ~/.bashrc\
 && echo "export PATH=$JAVA_HOME/bin:$JAVA_HOME/jre/bin:$PATH" >> ~/.bashrc\
-&& echo "export CLASSPATH=.:$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/jre/lib/ext" >> ~/.bashrc\
+&& echo "export CLASSPATH=.:$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/jre/lib/ext:$CLASSPATH" >> ~/.bashrc\
 && echo "export PATH=/home1/irteam/apps/mysql/bin:/home1/irteam/apps/cmake/bin:$PATH" >> ~/.bashrc\
 && echo "export CATALINA_HOME=${APP_HOME}/apps/tomcat" >> ~/.bashrc\
 && echo "export PYTHON_HOME=$APP_HOME/apps/python" >> ~/.bashrc\
