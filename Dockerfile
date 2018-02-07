@@ -136,23 +136,6 @@ RUN use mysql;
 RUN update user set password=password('123456') where user='root';
 RUN flush privileges;
 RUN \q
-WORKDIR /home1/irteam/apps
-RUN cd /home1/irteam/apps\
-&& wget https://cdn.mysql.com/archives/mysql-connector-java-5.1/mysql-connector-java-5.1.44.tar.gz\
-&& tar xvzf mysql-connector-java-5.1.44.tar.gz\
-&& cd mysql-connector-java-5.1.44\
-&& cp mysql-connector-java-5.1.44-bin.jar /home1/irteam/apps/instance1/lib/\
-&& cp mysql-connector-java-5.1.44-bin.jar /home1/irteam/apps/instance2/lib/\
-&& cp mysql-connector-java-5.1.44-bin.jar /home1/irteam/apps/jdk/lib/\
-&& mysql -u root -p\
-&& 123456
-
-
-
-
-
-
-
 
 EXPOSE 80
 EXPOSE 443
